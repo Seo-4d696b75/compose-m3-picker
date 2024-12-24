@@ -139,7 +139,8 @@ class PickerState<out T> internal constructor(
     /**
      * An index of currently selected value.
      *
-     * Unlike [currentIndex], this index is NOT changed while user scrolling or snap (fling) animation running.
+     * Unlike [snapIndex] or [targetIndex],
+     * this index is NOT changed while user scrolling or snap (fling) animation running.
      */
     val settleIndex: Int by derivedStateOf {
         val current = this.index
