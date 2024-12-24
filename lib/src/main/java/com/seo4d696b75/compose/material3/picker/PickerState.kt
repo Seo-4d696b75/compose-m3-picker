@@ -7,8 +7,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.drop
@@ -80,7 +81,7 @@ fun <T> rememberPickerState(
 fun <T> rememberPickerState(
     values: List<T>,
     initialIndex: Int,
-): PickerState<T> = remember(values) {
+): PickerState<T> = rememberSaveable(values, PickerState.Saver(values)) {
     PickerState(
         values = values,
         initialIndex = initialIndex,
@@ -166,5 +167,17 @@ class PickerState<out T> internal constructor(
         val lower = floor(index - 1).roundToInt()
         val upper = ceil(index + 1).roundToInt()
         return max(lower, 0)..min(upper, values.size - 1)
+    }
+
+    companion object {
+        fun <T> Saver(values: List<T>) = Saver<PickerState<T>, Int>(
+            save = { it.settleIndex },
+            restore = {
+                PickerState(
+                    values = values,
+                    initialIndex = it,
+                )
+            }
+        )
     }
 }
