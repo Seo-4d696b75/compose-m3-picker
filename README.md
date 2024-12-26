@@ -23,6 +23,8 @@ TODO
 
 ### Number picker
 
+<img src="capture/sample_number_picker.png" height="240">
+
 ```kotlin
     var value by remember { mutableIntStateOf(0) }
 
@@ -34,6 +36,8 @@ TODO
 ```
 
 ### Picker with generic values
+
+<img src="capture/sample_generic_picker.png" height="240">
 
 ```kotlin
     val values = remember {
@@ -57,6 +61,8 @@ TODO
 ```
 
 ### Customize picker
+
+<img src="capture/sample_custom_picker.png" height="240">
 
 ```kotlin
     val values = remember {
