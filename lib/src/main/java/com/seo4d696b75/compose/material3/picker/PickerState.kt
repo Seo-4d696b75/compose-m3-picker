@@ -1,5 +1,8 @@
 package com.seo4d696b75.compose.material3.picker
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -176,6 +179,32 @@ class PickerState<out T> internal constructor(
         val target = index.coerceIn(0, values.size - 1)
         this.index = target.toFloat()
         this.targetIndex = target
+    }
+
+    /**
+     * Scroll to a given [index] with animation.
+     */
+    suspend fun animateScrollToIndex(
+        index: Int,
+        animationSpec: AnimationSpec<Float> = spring(),
+    ) {
+        val interval = intervalHeight
+        if (interval.isNaN()) {
+            scrollToIndex(index)
+        } else {
+            val target = index.coerceIn(0, values.size - 1)
+            val scrollAmount = -(target - this.index) * interval
+            var previous = 0f
+            animate(
+                initialValue = 0f,
+                targetValue = scrollAmount,
+                animationSpec = animationSpec,
+            ) { current, _ ->
+                val delta = current - previous
+                val consumed = dispatchRawDelta(delta)
+                previous += consumed
+            }
+        }
     }
 
     internal var intervalHeight: Float = Float.NaN
