@@ -8,12 +8,12 @@ Android library providing a Picker implemented by Jetpack Compose.
 
 ## Features
 
+<img src="capture/sample_picker.gif">
+
 - ✅️ Same experience as [NumberPicker view](https://developer.android.com/reference/android/widget/NumberPicker)
 - ✅️ Supports scroll and fling
 - ✅️ Compatible with Material3
 - ✅️ Custamizable with slot pattern
-
-<!-- TODO screenshot here -->
 
 ## Installation
 
