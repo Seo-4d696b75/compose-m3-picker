@@ -95,7 +95,6 @@ class PickerState<out T> internal constructor(
 ) {
     internal var index by mutableFloatStateOf(initialIndex.toFloat())
     internal var target by mutableIntStateOf(initialIndex)
-    internal var intervalHeight: Int = 0
 
     /**
      * Normalized offset of each displayed label.
@@ -163,7 +162,14 @@ class PickerState<out T> internal constructor(
         this.target = target
     }
 
-    internal fun getVisibleLabelIndices(): Iterable<Int> {
+    internal var intervalHeight: Float = Float.NaN
+        private set
+
+    /**
+     * Update layout size of the picker and get label indices to be displayed.
+     */
+    internal fun onLayout(intervalHeight: Float): Iterable<Int> {
+        this.intervalHeight = intervalHeight
         val lower = floor(index - 1).roundToInt()
         val upper = ceil(index + 1).roundToInt()
         return max(lower, 0)..min(upper, values.size - 1)

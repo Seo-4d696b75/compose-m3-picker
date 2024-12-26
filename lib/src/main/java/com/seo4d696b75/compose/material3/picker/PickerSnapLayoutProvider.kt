@@ -14,11 +14,11 @@ internal class PickerSnapLayoutProvider(
         // ignore sign of velocity
         val snapIndex = state.snapIndex
         val interval = state.intervalHeight
-        return if (interval > 0) {
+        return if (interval.isNaN()) {
+            0f
+        } else {
             state.target = snapIndex
             -(snapIndex - state.currentIndex) * interval
-        } else {
-            0f
         }
     }
 
@@ -28,14 +28,14 @@ internal class PickerSnapLayoutProvider(
             return calculateSnapOffset(velocity)
         }
         val interval = state.intervalHeight
-        return if (interval > 0) {
+        return if (interval.isNaN()) {
+            0f
+        } else {
             val currentIndex = state.currentIndex
             val decayIndex = currentIndex - decayOffset / interval
             val snapIndex = decayIndex.roundToInt().coerceIn(0, state.values.size - 1)
             state.target = snapIndex
             -(snapIndex - currentIndex) * interval
-        } else {
-            0f
         }
     }
 }

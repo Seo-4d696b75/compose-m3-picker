@@ -156,18 +156,17 @@ private fun <T> PickerLabels(
             maximumValue = constraints.maxHeight,
         )
         val labelHeight = (height - dividerHeight.toPx() * 2) / 3f
+        val intervalHeight = labelHeight + dividerHeight.toPx()
+
+        val indices = state.onLayout(intervalHeight)
 
         val labelConstraints = Constraints.fixed(
             width = width,
             height = floor(labelHeight).roundToInt(),
         )
-        val indices = state.getVisibleLabelIndices()
         val placeableMap = indices.associateWith { index ->
             measure(index, labelConstraints).first()
         }
-
-        val intervalHeight = floor(labelHeight + dividerHeight.toPx()).roundToInt()
-        state.intervalHeight = intervalHeight
 
         layout(width, height) {
             placeableMap.forEach { (index, placeable) ->
@@ -220,14 +219,14 @@ private class PickerDragMediator : ScrollScope {
 
     override fun scrollBy(pixels: Float): Float {
         val interval = state.intervalHeight
-        return if (interval > 0) {
+        return if (interval.isNaN()) {
+            0f
+        } else {
             val currentIndex = state.index
             val targetIndex =
                 (currentIndex - pixels / interval).coerceIn(0f, state.values.size - 1f)
             state.index = targetIndex
             -(targetIndex - currentIndex) * interval
-        } else {
-            0f
         }
     }
 }
