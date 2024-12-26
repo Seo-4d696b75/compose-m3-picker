@@ -172,7 +172,7 @@ private fun <T> PickerLabels(
             placeableMap.forEach { (index, placeable) ->
                 placeable.placeWithLayer(
                     x = 0,
-                    y = ((state.offset + index) * intervalHeight).roundToInt(),
+                    y = state.offset(index),
                 ) {
                     val distance = (index - state.index).absoluteValue.coerceAtMost(1f)
                     alpha = 1f - (1f - labelMinAlpha) * distance
@@ -217,16 +217,5 @@ private class PickerDragMediator : ScrollScope {
         }
     }
 
-    override fun scrollBy(pixels: Float): Float {
-        val interval = state.intervalHeight
-        return if (interval.isNaN()) {
-            0f
-        } else {
-            val currentIndex = state.index
-            val targetIndex =
-                (currentIndex - pixels / interval).coerceIn(0f, state.values.size - 1f)
-            state.index = targetIndex
-            -(targetIndex - currentIndex) * interval
-        }
-    }
+    override fun scrollBy(pixels: Float) = state.dispatchRawDelta(pixels)
 }

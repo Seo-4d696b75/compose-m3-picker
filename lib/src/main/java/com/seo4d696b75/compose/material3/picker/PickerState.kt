@@ -111,7 +111,7 @@ class PickerState<out T> internal constructor(
      * This index may be non-integer while scrolling or snap (fling) animation running.
      */
     var index by mutableFloatStateOf(initialIndex.toFloat())
-        internal set
+        private set
 
     /**
      * An index of value to which the current picker will be snapped.
@@ -152,6 +152,24 @@ class PickerState<out T> internal constructor(
     }
 
     /**
+     * Scroll logic
+     *
+     * Same interface as `ScrollableState.dispatchRawDelta`
+     */
+    fun dispatchRawDelta(delta: Float): Float {
+        val interval = intervalHeight
+        return if (interval.isNaN()) {
+            0f
+        } else {
+            val currentIndex = index
+            val targetIndex =
+                (currentIndex - delta / interval).coerceIn(0f, values.size - 1f)
+            index = targetIndex
+            -(targetIndex - currentIndex) * interval
+        }
+    }
+
+    /**
      * Scroll to the specified index without animation.
      */
     fun scrollToIndex(index: Int) {
@@ -171,6 +189,17 @@ class PickerState<out T> internal constructor(
         val lower = floor(index - 1).roundToInt()
         val upper = ceil(index + 1).roundToInt()
         return max(lower, 0)..min(upper, values.size - 1)
+    }
+
+    /**
+     * Calculate offset in pixels at which the specified label should be placed.
+     */
+    fun offset(index: Int): Int = intervalHeight.let { interval ->
+        if (interval.isNaN()) {
+            throw IllegalStateException("picker not layout yet")
+        } else {
+            ((index + 1 - this.index) * interval).roundToInt()
+        }
     }
 
     companion object {
