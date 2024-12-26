@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
  *   [onValueChange] is NOT invoked while usr scrolling, but will be called
  *   after user interaction completed and the picker is settled to the final snapping position.
  *
- * @see [PickerState.settleIndex]
+ * @see [PickerState.settledIndex]
  */
 @Composable
 fun <T> rememberPickerState(
@@ -47,7 +47,7 @@ fun <T> rememberPickerState(
 
     // value changed outside the picker
     LaunchedEffect(state, index) {
-        if (state.settleIndex != index) {
+        if (state.settledIndex != index) {
             state.scrollToIndex(index)
         }
     }
@@ -56,7 +56,7 @@ fun <T> rememberPickerState(
     val latestValue by rememberUpdatedState(value)
     val latestCallback by rememberUpdatedState(onValueChange)
     LaunchedEffect(state) {
-        snapshotFlow { state.settleIndex }
+        snapshotFlow { state.settledIndex }
             .drop(1)
             .map { state.values[it] }
             .filter { it != latestValue }
@@ -93,9 +93,6 @@ class PickerState<out T> internal constructor(
     val values: List<T>,
     initialIndex: Int,
 ) {
-    internal var index by mutableFloatStateOf(initialIndex.toFloat())
-    internal var target by mutableIntStateOf(initialIndex)
-
     /**
      * Normalized offset of each displayed label.
      *
@@ -113,43 +110,44 @@ class PickerState<out T> internal constructor(
      *
      * This index may be non-integer while scrolling or snap (fling) animation running.
      */
-    val currentIndex: Float
-        get() = index
+    var index by mutableFloatStateOf(initialIndex.toFloat())
+        internal set
 
     /**
-     * An index of value to which the current picker should be snapped.
+     * An index of value to which the current picker will be snapped.
      *
-     * This index must be the same value of [currentIndex] when no scroll or snap (fling) animation is running.
-     *
-     * This snap position only takes account of the scroll offset, not the current scroll (fling) velocity.
+     * This index must be the same value of [index]
+     * when no scroll or snap (fling) animation is running.
+     * The snap position only takes account of the scroll offset,
+     * not the current scroll (fling) velocity.
      */
-    val snapIndex: Int by derivedStateOf { index.roundToInt() }
+    val currentIndex: Int by derivedStateOf { index.roundToInt() }
 
     /**
      * An index of value to which the picker should be snapped.
      *
-     * Unlike [snapIndex], this index can only be updated when a user scrolling is completed
+     * Unlike [currentIndex], this index can only be updated when a user scrolling is completed
      * and the final snap position is determined.
      */
-    val targetIndex: Int
-        get() = target
+    var targetIndex: Int by mutableIntStateOf(initialIndex)
+        internal set
 
-    private var currentSettleIndex = initialIndex
+    private var previousSettledIndex = initialIndex
 
     /**
      * An index of currently selected value.
      *
-     * Unlike [snapIndex] or [targetIndex],
+     * Unlike [currentIndex] or [targetIndex],
      * this index is NOT changed while user scrolling or snap (fling) animation running.
      */
-    val settleIndex: Int by derivedStateOf {
+    val settledIndex: Int by derivedStateOf {
         val current = this.index
-        val target = this.target
+        val target = this.targetIndex
         if ((target - current).absoluteValue < 1e-6) {
-            currentSettleIndex = target
+            previousSettledIndex = target
             target
         } else {
-            currentSettleIndex
+            previousSettledIndex
         }
     }
 
@@ -159,7 +157,7 @@ class PickerState<out T> internal constructor(
     fun scrollToIndex(index: Int) {
         val target = index.coerceIn(0, values.size - 1)
         this.index = target.toFloat()
-        this.target = target
+        this.targetIndex = target
     }
 
     internal var intervalHeight: Float = Float.NaN
@@ -177,7 +175,7 @@ class PickerState<out T> internal constructor(
 
     companion object {
         fun <T> Saver(values: List<T>) = Saver<PickerState<T>, Int>(
-            save = { it.settleIndex },
+            save = { it.settledIndex },
             restore = {
                 PickerState(
                     values = values,

@@ -12,13 +12,13 @@ internal class PickerSnapLayoutProvider(
 ) : SnapLayoutInfoProvider {
     override fun calculateSnapOffset(velocity: Float): Float {
         // ignore sign of velocity
-        val snapIndex = state.snapIndex
+        val snapIndex = state.currentIndex
         val interval = state.intervalHeight
         return if (interval.isNaN()) {
             0f
         } else {
-            state.target = snapIndex
-            -(snapIndex - state.currentIndex) * interval
+            state.targetIndex = snapIndex
+            -(snapIndex - state.index) * interval
         }
     }
 
@@ -31,10 +31,10 @@ internal class PickerSnapLayoutProvider(
         return if (interval.isNaN()) {
             0f
         } else {
-            val currentIndex = state.currentIndex
+            val currentIndex = state.index
             val decayIndex = currentIndex - decayOffset / interval
             val snapIndex = decayIndex.roundToInt().coerceIn(0, state.values.size - 1)
-            state.target = snapIndex
+            state.targetIndex = snapIndex
             -(snapIndex - currentIndex) * interval
         }
     }

@@ -174,7 +174,7 @@ private fun <T> PickerLabels(
                     x = 0,
                     y = ((state.offset + index) * intervalHeight).roundToInt(),
                 ) {
-                    val distance = (index - state.currentIndex).absoluteValue.coerceAtMost(1f)
+                    val distance = (index - state.index).absoluteValue.coerceAtMost(1f)
                     alpha = 1f - (1f - labelMinAlpha) * distance
                 }
             }
