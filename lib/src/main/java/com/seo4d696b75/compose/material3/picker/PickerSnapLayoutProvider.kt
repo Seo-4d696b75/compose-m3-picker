@@ -1,7 +1,9 @@
 package com.seo4d696b75.compose.material3.picker
 
 import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import kotlin.math.sign
 
 /**
  * Defines how to calculate target offsets of snapping and fling animation
@@ -25,17 +27,22 @@ internal class PickerSnapLayoutProvider(
     override fun calculateApproachOffset(velocity: Float, decayOffset: Float): Float {
         if (!flingEnabled) {
             // use snapping instead if fling animation is disabled
-            return calculateSnapOffset(velocity)
+            return 0f
         }
         val interval = state.intervalHeight
-        return if (interval.isNaN()) {
+        if (interval.isNaN()) {
+            return 0f
+        }
+        val currentIndex = state.index
+        val decayIndex = currentIndex - decayOffset / interval
+        val snapIndex = decayIndex.roundToInt().coerceIn(0, state.values.size - 1)
+        val distance = (snapIndex - currentIndex).absoluteValue
+        return if (distance <= 1f) {
+            // if current index is close enough to the target index, no decay animation
             0f
         } else {
-            val currentIndex = state.index
-            val decayIndex = currentIndex - decayOffset / interval
-            val snapIndex = decayIndex.roundToInt().coerceIn(0, state.values.size - 1)
             state.targetIndex = snapIndex
-            -(snapIndex - currentIndex) * interval
+            distance * interval * velocity.sign
         }
     }
 }
