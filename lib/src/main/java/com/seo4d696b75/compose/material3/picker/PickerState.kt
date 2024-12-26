@@ -84,7 +84,10 @@ fun <T> rememberPickerState(
 fun <T> rememberPickerState(
     values: List<T>,
     initialIndex: Int,
-): PickerState<T> = rememberSaveable(values, PickerState.Saver(values)) {
+): PickerState<T> = rememberSaveable(
+    values,
+    saver = PickerState.Saver(values),
+) {
     PickerState(
         values = values,
         initialIndex = initialIndex,
