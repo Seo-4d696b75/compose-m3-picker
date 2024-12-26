@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.seo4d696b75.compose.material3.picker.sample"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.seo4d696b75.compose.material3.picker.sample"
@@ -40,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -50,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":lib"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
