@@ -3,7 +3,7 @@
 Android library providing a Picker implemented by Jetpack Compose.
 
 
-![License MIT](https://img.shields.io/badge/MIT-9E9F9F?label=License)
+![License MIT](https://img.shields.io/badge/Apache_2.0-9E9F9F?label=License)
 ![Android minimuml version](https://img.shields.io/badge/26+-9E9F9F?&label=Minimum&logo=android)
 
 ## Features
