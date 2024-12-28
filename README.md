@@ -23,7 +23,7 @@ In your module level `build.gradle` file
 
 ```gradle
 dependencies {
-    implementation("com.seo4d696b75.compose:material3-picker:0.1.0")
+    implementation("com.seo4d696b75.compose:material3-picker:$version")
 }
 ```
 
@@ -38,7 +38,7 @@ dependencies {
 
     NumberPicker(
         value = value,
-        range = 0..10,
+        range = (0..10).toPersistentList(),
         onValueChange = { value = it },
     )
 ```
@@ -49,7 +49,7 @@ dependencies {
 
 ```kotlin
     val values = remember {
-        listOf(
+    persistentListOf(
             LocalDate.of(2024, 12, 1),
             LocalDate.of(2024, 12, 2),
             LocalDate.of(2024, 12, 3),
@@ -58,13 +58,12 @@ dependencies {
             LocalDate.of(2024, 12, 6),
         )
     }
-
-    var value by remember { mutableStateOf(values.first()) }
+var index by remember { mutableIntStateOf(0) }
 
     Picker(
-        value = value,
+        index = index,
         values = values,
-        onValueChange = { value = it },
+        onIndexChange = { index = it },
     )
 ```
 
@@ -74,7 +73,7 @@ dependencies {
 
 ```kotlin
     val values = remember {
-        listOf(
+    persistentListOf(
             Icons.Outlined.Build,
             Icons.Outlined.MailOutline,
             Icons.Outlined.Call,
@@ -83,8 +82,7 @@ dependencies {
             Icons.Outlined.Delete,
         )
     }
-    var value by remember { mutableStateOf(values.first()) }
-    val state = rememberPickerState(value, values) { value = it }
+val state = rememberPickerState(values)
 
     Picker(
         state = state,
@@ -93,16 +91,16 @@ dependencies {
         labelSize = DpSize(240.dp, 64.dp),
         dividerHeight = 4.dp,
         flingBehavior = PickerDefaults.flingBehavior(state = state, flingEnabled = false),
-    ) { current, enabled ->
+    ) { icon, enabled ->
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = current,
+                imageVector = icon,
                 contentDescription = null,
             )
-            Text(text = current.name)
+            Text(text = icon.name)
         }
     }
 ```
