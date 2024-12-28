@@ -2,6 +2,8 @@
 
 Android library providing a Picker implemented by Jetpack Compose.
 
+[![Maven version](https://img.shields.io/maven-central/v/com.seo4d696b75.compose/material3-picker)](https://central.sonatype.com/artifact/com.seo4d696b75.compose/material3-picker)
+
 
 ![License MIT](https://img.shields.io/badge/Apache_2.0-9E9F9F?label=License)
 ![Android minimuml version](https://img.shields.io/badge/26+-9E9F9F?&label=Minimum&logo=android)
@@ -17,7 +19,13 @@ Android library providing a Picker implemented by Jetpack Compose.
 
 ## Installation
 
-TODO
+In your module level `build.gradle` file
+
+```gradle
+dependencies {
+    implementation("com.seo4d696b75.compose:material3-picker:0.1.0")
+}
+```
 
 ## Basic Usage
 
