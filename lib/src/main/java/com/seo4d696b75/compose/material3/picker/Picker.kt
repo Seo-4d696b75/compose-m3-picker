@@ -71,7 +71,7 @@ fun <T : Any> Picker(
     },
 ) {
     val labelProvider = rememberPickerLabelProvider(
-        values = state.values,
+        state = state,
         label = label,
         enabled = enabled,
         contentColor = colors.contentColor(enabled),

@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.Color
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun <T> rememberPickerLabelProvider(
-    values: List<T>,
+    state: PickerState<T>,
     label: @Composable (T, Boolean) -> Unit,
     enabled: Boolean,
     contentColor: Color,
@@ -27,7 +27,7 @@ internal fun <T> rememberPickerLabelProvider(
     val provider = remember {
         PickerLabelProvider<T>()
     }.also {
-        it.values = values
+        it.values = state.values
         it.label = label
         it.enabled = enabled
         it.contentColor = contentColor
