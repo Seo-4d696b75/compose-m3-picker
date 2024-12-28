@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.seo4d696b75.compose.material3.picker.NumberPicker
+import kotlinx.collections.immutable.toPersistentList
 
 @Composable
 fun NumberPickerSection(
@@ -28,7 +29,7 @@ fun NumberPickerSection(
             text = "NumberPicker",
             style = MaterialTheme.typography.titleMedium,
         )
-        val range = remember { 0..20 }
+        val range = remember { (0..20).toPersistentList() }
         var value by remember { mutableIntStateOf(0) }
 
         Row(

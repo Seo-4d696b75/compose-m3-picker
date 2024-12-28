@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.seo4d696b75.compose.material3.picker.Picker
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 
 @Composable
@@ -31,12 +32,12 @@ fun GenericPickerSection(
             style = MaterialTheme.typography.titleMedium,
         )
         val values = remember {
-            listOf("零", "壱", "弐", "参", "肆", "伍", "陸", "七", "八", "玖", "拾")
+            persistentListOf("零", "壱", "弐", "参", "肆", "伍", "陸", "七", "八", "玖", "拾")
         }
-        var value by remember { mutableStateOf(values.first()) }
+        var index by remember { mutableIntStateOf(0) }
 
         val values2 = remember {
-            listOf(
+            persistentListOf(
                 LocalDate.of(2024, 12, 1),
                 LocalDate.of(2024, 12, 2),
                 LocalDate.of(2024, 12, 3),
@@ -46,21 +47,21 @@ fun GenericPickerSection(
             )
         }
 
-        var value2 by remember { mutableStateOf(values2.first()) }
+        var index2 by remember { mutableIntStateOf(0) }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(48.dp),
         ) {
             Picker(
-                value = value,
+                index = index,
                 values = values,
-                onValueChange = { value = it },
+                onIndexChange = { index = it },
             )
             Picker(
-                value = value2,
+                index = index2,
                 values = values2,
                 labelSize = DpSize(120.dp, 48.dp),
-                onValueChange = { value2 = it },
+                onIndexChange = { index2 = it },
             )
         }
     }
