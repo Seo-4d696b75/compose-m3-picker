@@ -18,7 +18,6 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -29,24 +28,23 @@ import kotlin.math.roundToInt
 /**
  * Creates and remember a [PickerState] with a conventional callback
  *
- * @param value The currently selected value. Must be included in [values].
- *   At the creation of [PickerState], the index of this [value] is set as `initialIndex`.
- *   If [value] is changed outside of the picker (not by user interaction),
- *   the picker will be scrolled to the index of [value] without animation.
+ * @param index An index of currently selected value. Must be included in range of [values].
+ *   At the creation of [PickerState], this index is set as `initialIndex`.
+ *   If [index] is changed outside of the picker (not by user interaction),
+ *   the picker will be scrolled to the target position without animation.
  * @param values All the selectable values.
- * @param onValueChange A callback invoked when the currently selected value in picker is changed.
- *   [onValueChange] is NOT invoked while usr scrolling, but will be called
+ * @param onIndexChange A callback invoked when the currently selected value in picker is changed.
+ *   [onIndexChange] is NOT invoked while usr scrolling, but will be called
  *   after user interaction completed and the picker is settled to the final snapping position.
  *
  * @see [PickerState.settledIndex]
  */
 @Composable
 fun <T> rememberPickerState(
-    value: T,
+    index: Int,
     values: ImmutableList<T>,
-    onValueChange: (T) -> Unit,
+    onIndexChange: (Int) -> Unit,
 ): PickerState<T> {
-    val index = values.indexOf(value)
     val state = rememberPickerState(values, index)
 
     // value changed outside the picker
@@ -57,13 +55,12 @@ fun <T> rememberPickerState(
     }
 
     // invoke callback
-    val latestValue by rememberUpdatedState(value)
-    val latestCallback by rememberUpdatedState(onValueChange)
+    val latestIndex by rememberUpdatedState(index)
+    val latestCallback by rememberUpdatedState(onIndexChange)
     LaunchedEffect(state) {
         snapshotFlow { state.settledIndex }
             .drop(1)
-            .map { state.values[it] }
-            .filter { it != latestValue }
+            .filter { it != latestIndex }
             .collect {
                 latestCallback(it)
             }
@@ -84,7 +81,7 @@ fun <T> rememberPickerState(
 @Composable
 fun <T> rememberPickerState(
     values: ImmutableList<T>,
-    initialIndex: Int,
+    initialIndex: Int = 0,
 ): PickerState<T> = rememberSaveable(
     values,
     saver = PickerState.Saver(values),

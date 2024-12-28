@@ -21,9 +21,9 @@ fun NumberPicker(
     dividerHeight: Dp = PickerDefaults.dividerHeight,
 ) {
     Picker(
-        value = value,
+        index = range.indexOf(value),
         values = range,
-        onValueChange = onValueChange,
+        onIndexChange = { onValueChange(range[it]) },
         modifier = modifier,
         enabled = enabled,
         colors = colors,
@@ -35,9 +35,9 @@ fun NumberPicker(
 
 @Composable
 fun <T : Any> Picker(
-    value: T,
+    index: Int,
     values: ImmutableList<T>,
-    onValueChange: (T) -> Unit,
+    onIndexChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: PickerColors = PickerDefaults.colors(),
@@ -46,7 +46,7 @@ fun <T : Any> Picker(
     dividerHeight: Dp = PickerDefaults.dividerHeight,
 ) {
     Picker(
-        state = rememberPickerState(value, values, onValueChange),
+        state = rememberPickerState(index, values, onIndexChange),
         modifier = modifier,
         enabled = enabled,
         colors = colors,
