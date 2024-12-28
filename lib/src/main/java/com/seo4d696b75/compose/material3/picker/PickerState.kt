@@ -15,6 +15,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -42,7 +43,7 @@ import kotlin.math.roundToInt
 @Composable
 fun <T> rememberPickerState(
     value: T,
-    values: List<T>,
+    values: ImmutableList<T>,
     onValueChange: (T) -> Unit,
 ): PickerState<T> {
     val index = values.indexOf(value)
@@ -82,7 +83,7 @@ fun <T> rememberPickerState(
  */
 @Composable
 fun <T> rememberPickerState(
-    values: List<T>,
+    values: ImmutableList<T>,
     initialIndex: Int,
 ): PickerState<T> = rememberSaveable(
     values,

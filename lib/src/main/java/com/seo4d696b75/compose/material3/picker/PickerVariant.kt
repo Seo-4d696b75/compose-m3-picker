@@ -6,11 +6,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun NumberPicker(
     value: Int,
-    range: Iterable<Int>,
+    range: ImmutableList<Int>,
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -21,7 +22,7 @@ fun NumberPicker(
 ) {
     Picker(
         value = value,
-        values = range.toList(),
+        values = range,
         onValueChange = onValueChange,
         modifier = modifier,
         enabled = enabled,
@@ -35,7 +36,7 @@ fun NumberPicker(
 @Composable
 fun <T : Any> Picker(
     value: T,
-    values: List<T>,
+    values: ImmutableList<T>,
     onValueChange: (T) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

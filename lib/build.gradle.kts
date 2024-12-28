@@ -34,6 +34,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        val reportDir = layout.buildDirectory.dir("compose_compiler").get().asFile.absolutePath
+        freeCompilerArgs += listOf(
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$reportDir",
+            "-P",
+            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=$reportDir"
+        )
     }
     buildFeatures {
         compose = true
@@ -58,6 +65,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.kotlinx.collections.immutable)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
