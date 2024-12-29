@@ -6,7 +6,7 @@ Android library providing a Picker implemented by Jetpack Compose.
 
 
 ![License MIT](https://img.shields.io/badge/Apache_2.0-9E9F9F?label=License)
-![Android minimuml version](https://img.shields.io/badge/26+-9E9F9F?&label=Minimum&logo=android)
+![Android minimum version](https://img.shields.io/badge/26+-9E9F9F?&label=Minimum&logo=android)
 
 ## Features
 
@@ -49,7 +49,7 @@ dependencies {
 
 ```kotlin
     val values = remember {
-    persistentListOf(
+        persistentListOf(
             LocalDate.of(2024, 12, 1),
             LocalDate.of(2024, 12, 2),
             LocalDate.of(2024, 12, 3),
@@ -58,7 +58,7 @@ dependencies {
             LocalDate.of(2024, 12, 6),
         )
     }
-var index by remember { mutableIntStateOf(0) }
+    var index by remember { mutableIntStateOf(0) }
 
     Picker(
         index = index,
@@ -73,7 +73,7 @@ var index by remember { mutableIntStateOf(0) }
 
 ```kotlin
     val values = remember {
-    persistentListOf(
+        persistentListOf(
             Icons.Outlined.Build,
             Icons.Outlined.MailOutline,
             Icons.Outlined.Call,
@@ -82,7 +82,7 @@ var index by remember { mutableIntStateOf(0) }
             Icons.Outlined.Delete,
         )
     }
-val state = rememberPickerState(values)
+    val state = rememberPickerState(values)
 
     Picker(
         state = state,
