@@ -29,8 +29,9 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-material3-picker = { group = "com.seo4d696b75.compose", name = "material3-picker", version = "0.1.0" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "0.3.8" }
+
+material3-picker = { group = "com.seo4d696b75.compose", name = "material3-picker", version.ref = "publish" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
