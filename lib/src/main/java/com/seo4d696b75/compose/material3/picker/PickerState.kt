@@ -194,6 +194,7 @@ class PickerState<out T> internal constructor(
             scrollToIndex(index)
         } else {
             val target = index.coerceIn(0, values.size - 1)
+            this.targetIndex = target
             val scrollAmount = -(target - this.index) * interval
             var previous = 0f
             animate(
@@ -205,6 +206,7 @@ class PickerState<out T> internal constructor(
                 val consumed = dispatchRawDelta(delta)
                 previous += consumed
             }
+            this.index = target.toFloat()
         }
     }
 
