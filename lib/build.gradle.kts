@@ -58,8 +58,8 @@ android {
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.material3)
-    implementation(libs.kotlinx.collections.immutable)
+    api(libs.androidx.material3)
+    api(libs.kotlinx.collections.immutable)
 }
 
 // zip all the files to be published before curl POST
