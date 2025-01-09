@@ -29,6 +29,12 @@ dependencies {
 
 ## Basic Usage
 
+> [!NOTE]
+>
+> `range` and `values` arguments are defined as `ImmutableList` instead of `List` interface
+> for performance considerations. 
+> see [kotlinx.collections.immutable](https://github.com/Kotlin/kotlinx.collections.immutable)
+
 ### Number picker
 
 <img src="capture/sample_number_picker.png" height="240">
