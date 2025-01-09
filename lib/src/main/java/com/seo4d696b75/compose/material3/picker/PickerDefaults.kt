@@ -8,6 +8,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.gestures.snapping.snapFlingBehavior
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -18,6 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
+/**
+ * Defines colors of a picker
+ *
+ * - [contentColor] is applied as [LocalContentColor] for `label` composable
+ * - [dividersColor] is color of dividers placed between labels
+ *
+ * If the picker is disabled, `disabled**Color` are applied instead.
+ */
 @Immutable
 class PickerColors(
     val contentColor: Color,
@@ -71,7 +80,7 @@ object PickerDefaults {
 
     val dividerHeight = 2.dp
 
-    // expired by PagerDefaults.flingBehavior()
+    // inspired by PagerDefaults.flingBehavior()
     /**
      * Gets a [snapFlingBehavior] which will snap labels to the center of the layout.
      *
