@@ -50,7 +50,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.material3.picker)
+    implementation(project(":lib"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
