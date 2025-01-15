@@ -155,14 +155,15 @@ private fun <T> PickerLabels(
             minimumValue = constraints.minHeight,
             maximumValue = constraints.maxHeight,
         )
-        val labelHeight = (height - dividerHeight.toPx() * 2) / 3f
-        val intervalHeight = labelHeight + dividerHeight.toPx()
 
-        val indices = state.onLayout(intervalHeight)
+        val dividerHeightPx = dividerHeight.toPx().roundToInt()
+        val labelHeight = floor((height - dividerHeightPx * 2) / 3f).roundToInt()
+
+        val indices = state.onLayout(labelHeight, dividerHeightPx)
 
         val labelConstraints = Constraints.fixed(
             width = width,
-            height = floor(labelHeight).roundToInt(),
+            height = labelHeight
         )
         val placeableMap = indices.associateWith { index ->
             measure(index, labelConstraints).first()

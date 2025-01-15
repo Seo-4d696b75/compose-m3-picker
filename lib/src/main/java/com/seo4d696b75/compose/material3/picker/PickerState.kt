@@ -10,6 +10,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -161,15 +162,15 @@ class PickerState<out T> internal constructor(
      * Same interface as `ScrollableState.dispatchRawDelta`
      */
     fun dispatchRawDelta(delta: Float): Float {
-        val interval = intervalHeight
-        return if (interval.isNaN()) {
+        val info = layoutInfo
+        return if (info !is PickerLayoutInfo.Measured) {
             0f
         } else {
             val currentIndex = index
             val targetIndex =
-                (currentIndex - delta / interval).coerceIn(0f, values.size - 1f)
+                (currentIndex - delta / info.intervalHeight).coerceIn(0f, values.size - 1f)
             index = targetIndex
-            -(targetIndex - currentIndex) * interval
+            -(targetIndex - currentIndex) * info.intervalHeight
         }
     }
 
@@ -189,13 +190,13 @@ class PickerState<out T> internal constructor(
         index: Int,
         animationSpec: AnimationSpec<Float> = spring(),
     ) {
-        val interval = intervalHeight
-        if (interval.isNaN()) {
+        val info = layoutInfo
+        if (info !is PickerLayoutInfo.Measured) {
             scrollToIndex(index)
         } else {
             val target = index.coerceIn(0, values.size - 1)
             this.targetIndex = target
-            val scrollAmount = -(target - this.index) * interval
+            val scrollAmount = -(target - this.index) * info.intervalHeight
             var previous = 0f
             animate(
                 initialValue = 0f,
@@ -210,14 +211,17 @@ class PickerState<out T> internal constructor(
         }
     }
 
-    internal var intervalHeight: Float = Float.NaN
+    var layoutInfo: PickerLayoutInfo by mutableStateOf(PickerLayoutInfo.Zero)
         private set
 
     /**
      * Update layout size of the picker and get label indices to be displayed.
      */
-    internal fun onLayout(intervalHeight: Float): Iterable<Int> {
-        this.intervalHeight = intervalHeight
+    internal fun onLayout(
+        labelHeight: Int,
+        dividerHeight: Int,
+    ): Iterable<Int> {
+        layoutInfo = PickerLayoutInfo.Measured(labelHeight, dividerHeight)
         val lower = floor(index - 1).roundToInt()
         val upper = ceil(index + 1).roundToInt()
         return max(lower, 0)..min(upper, values.size - 1)
@@ -226,12 +230,9 @@ class PickerState<out T> internal constructor(
     /**
      * Calculate offset in pixels at which the specified label should be placed.
      */
-    fun offset(index: Int): Int = intervalHeight.let { interval ->
-        if (interval.isNaN()) {
-            throw IllegalStateException("picker not layout yet")
-        } else {
-            ((index + 1 - this.index) * interval).roundToInt()
-        }
+    fun offset(index: Int): Int = when (val info = layoutInfo) {
+        PickerLayoutInfo.Zero -> throw IllegalStateException("picker not layout yet")
+        is PickerLayoutInfo.Measured -> ((index + 1 - this.index) * info.intervalHeight).roundToInt()
     }
 
     companion object {
