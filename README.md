@@ -96,7 +96,10 @@ dependencies {
         colors = PickerDefaults.colors(contentColor = MaterialTheme.colorScheme.secondary),
         labelSize = DpSize(240.dp, 64.dp),
         dividerHeight = 4.dp,
-        flingBehavior = PickerDefaults.flingBehavior(state = state, flingEnabled = false),
+        flingBehavior = PickerDefaults.flingBehavior(
+            state = state,
+            snapDistance = PagerSnapDistance.atMost(1),
+        ),
     ) { icon, enabled ->
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
