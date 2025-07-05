@@ -68,26 +68,25 @@ tasks.register<Zip>("archivePublication") {
 // TODO find official gradle plugin
 // publish via Central Publisher API
 // @see https://central.sonatype.com/api-doc
-tasks.register("publishMavenCentralAPI") {
+tasks.register<Exec>("publishMavenCentralAPI") {
     dependsOn("archivePublication")
-    doLast {
-        val username = project.properties["SONATYPE_USERNAME"].toString()
-        val password = project.properties["SONATYPE_PASSWORD"].toString()
 
-        @OptIn(ExperimentalEncodingApi::class)
-        val auth = Base64.encode("$username:$password".encodeToByteArray())
+    val username = project.properties["SONATYPE_USERNAME"].toString()
+    val password = project.properties["SONATYPE_PASSWORD"].toString()
 
-        exec {
-            commandLine = listOf(
-                "curl",
-                "--request", "POST",
-                "--verbose",
-                "--header", "Authorization: Bearer $auth",
-                "--form", "bundle=@build/distributions/lib.zip",
-                "https://central.sonatype.com/api/v1/publisher/upload?publishingType=AUTOMATIC",
-            )
-        }
-    }
+    @OptIn(ExperimentalEncodingApi::class)
+    val auth = Base64.encode("$username:$password".encodeToByteArray())
+
+    executable = "curl"
+    args(
+        listOf(
+            "--request", "POST",
+            "--verbose",
+            "--header", "Authorization: Bearer $auth",
+            "--form", "bundle=@build/distributions/lib.zip",
+            "https://central.sonatype.com/api/v1/publisher/upload?publishingType=AUTOMATIC",
+        )
+    )
 }
 
 afterEvaluate {
