@@ -35,6 +35,9 @@ import kotlin.math.roundToInt
  * @param onIndexChange A callback invoked when the currently selected value in picker is changed.
  *   [onIndexChange] is NOT invoked while usr scrolling, but will be called
  *   after user interaction completed and the picker is settled to the final snapping position.
+ *   The index param of [onIndexChange] is normalized in range of `0 ..< values.size`
+ *   even when [isInfiniteScrollable] is `true`.
+ * @param isInfiniteScrollable Whether infinite scroll (including fling animation) is enabled.
  *
  * @see [PickerState.settledIndex]
  */
@@ -43,8 +46,9 @@ fun <T> rememberPickerState(
     index: Int,
     values: ImmutableList<T>,
     onIndexChange: (Int) -> Unit,
+    isInfiniteScrollable: Boolean = false,
 ): PickerState<T> {
-    val state = rememberPickerState(values, index)
+    val state = rememberPickerState(values, index, isInfiniteScrollable)
 
     // value changed outside the picker
     LaunchedEffect(state, index) {
@@ -76,19 +80,21 @@ fun <T> rememberPickerState(
  * @param initialIndex The index of value which is selected at the first time.
  *   Must be in range of [values] size. While [values] remains the same (`==` returns true),
  *   change of [initialIndex] will have no effect.
+ * @param isInfiniteScrollable Whether infinite scroll (including fling animation) is enabled.
  */
 @Composable
 fun <T> rememberPickerState(
     values: ImmutableList<T>,
     initialIndex: Int = 0,
+    isInfiniteScrollable: Boolean = false,
 ): PickerState<T> = rememberSaveable(
     values,
-    saver = PickerState.Saver(values, false),
+    saver = PickerState.Saver(values, isInfiniteScrollable),
 ) {
     PickerState(
         values = values,
         initialIndex = initialIndex,
-        isInfiniteScrollable = false,
+        isInfiniteScrollable = isInfiniteScrollable,
     )
 }
 
@@ -113,9 +119,11 @@ class PickerState<out T> internal constructor(
     /**
      * An index of currently selected value.
      *
-     * This index may be non-integer while scrolling or snap (fling) animation running.
+     * This index may be
+     * - non-integer while scrolling or snap (fling) animation running
+     * - out of `0 ..< values.size` if infinite scroll is enabled
      */
-    var index by mutableFloatStateOf(initialIndex.toFloat().coerceInValueIndices())
+    var index by mutableFloatStateOf(initialIndex.normalizeValueIndex().toFloat())
         private set
 
     /**
@@ -125,16 +133,20 @@ class PickerState<out T> internal constructor(
      * when no scroll or snap (fling) animation is running.
      * The snap position only takes account of the scroll offset,
      * not the current scroll (fling) velocity.
+     *
+     * Normalized in range of `0 ..< values.size` even if infinite scroll is enabled.
      */
-    val currentIndex: Int by derivedStateOf { index.roundToInt() }
+    val currentIndex: Int by derivedStateOf { index.roundToInt().normalizeValueIndex() }
 
     /**
      * An index of value to which the picker should be snapped.
      *
      * Unlike [currentIndex], this index can only be updated when a user scrolling is completed
      * and the final snap position is determined.
+     *
+     * Normalized in range of `0 ..< values.size` even if infinite scroll is enabled.
      */
-    var targetIndex: Int by mutableIntStateOf(initialIndex)
+    var targetIndex: Int by mutableIntStateOf(initialIndex.normalizeValueIndex())
         internal set
 
     private var previousSettledIndex = initialIndex
@@ -180,7 +192,7 @@ class PickerState<out T> internal constructor(
     fun scrollToIndex(index: Int) {
         val target = index.coerceInValueIndices()
         this.index = target.toFloat()
-        this.targetIndex = target
+        this.targetIndex = target.normalizeValueIndex()
     }
 
     /**
@@ -195,7 +207,7 @@ class PickerState<out T> internal constructor(
             scrollToIndex(index)
         } else {
             val target = index.coerceInValueIndices()
-            this.targetIndex = target
+            this.targetIndex = target.normalizeValueIndex()
             val scrollAmount = -(target - this.index) * info.intervalHeight
             var previous = 0f
             animate(
@@ -216,6 +228,8 @@ class PickerState<out T> internal constructor(
 
     /**
      * Update layout size of the picker and get label indices to be displayed.
+     *
+     * @return not normalized indices
      */
     internal fun onLayout(
         labelHeight: Int,

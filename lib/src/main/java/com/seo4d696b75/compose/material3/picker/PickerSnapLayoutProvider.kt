@@ -35,7 +35,7 @@ internal class PickerSnapLayoutProvider(
             PickerLayoutInfo.Zero -> 0f
 
             is PickerLayoutInfo.Measured -> {
-                state.targetIndex = targetIndex
+                state.targetIndex = targetIndex.normalizeValueIndex()
                 -(targetIndex - currentIndex) * info.intervalHeight
             }
         }
@@ -70,7 +70,7 @@ internal class PickerSnapLayoutProvider(
         return if (decayDistance == 0f) {
             0f
         } else {
-            state.targetIndex = targetIndex
+            state.targetIndex = targetIndex.normalizeValueIndex()
             decayDistance * info.intervalHeight * velocity.sign
         }
     }
