@@ -166,7 +166,7 @@ private fun <T> PickerLabels(
             height = labelHeight
         )
         val placeableMap = indices.associateWith { index ->
-            measure(index, labelConstraints).first()
+            compose(index).first().measure(labelConstraints)
         }
 
         layout(width, height) {
