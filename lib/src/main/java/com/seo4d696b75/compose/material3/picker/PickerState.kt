@@ -22,8 +22,6 @@ import kotlinx.coroutines.flow.filter
 import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 /**
@@ -85,11 +83,12 @@ fun <T> rememberPickerState(
     initialIndex: Int = 0,
 ): PickerState<T> = rememberSaveable(
     values,
-    saver = PickerState.Saver(values),
+    saver = PickerState.Saver(values, false),
 ) {
     PickerState(
         values = values,
         initialIndex = initialIndex,
+        isInfiniteScrollable = false,
     )
 }
 
@@ -97,7 +96,8 @@ fun <T> rememberPickerState(
 class PickerState<out T> internal constructor(
     val values: List<T>,
     initialIndex: Int,
-) {
+    isInfiniteScrollable: Boolean,
+) : PickerValueSizeAwareScope by pickerValueSizeAwareScope(values, isInfiniteScrollable) {
     /**
      * Normalized offset of each displayed label.
      *
@@ -115,7 +115,7 @@ class PickerState<out T> internal constructor(
      *
      * This index may be non-integer while scrolling or snap (fling) animation running.
      */
-    var index by mutableFloatStateOf(initialIndex.toFloat())
+    var index by mutableFloatStateOf(initialIndex.toFloat().coerceInValueIndices())
         private set
 
     /**
@@ -168,7 +168,7 @@ class PickerState<out T> internal constructor(
         } else {
             val currentIndex = index
             val targetIndex =
-                (currentIndex - delta / info.intervalHeight).coerceIn(0f, values.size - 1f)
+                (currentIndex - delta / info.intervalHeight).coerceInValueIndices()
             index = targetIndex
             -(targetIndex - currentIndex) * info.intervalHeight
         }
@@ -178,7 +178,7 @@ class PickerState<out T> internal constructor(
      * Scroll to the specified index without animation.
      */
     fun scrollToIndex(index: Int) {
-        val target = index.coerceIn(0, values.size - 1)
+        val target = index.coerceInValueIndices()
         this.index = target.toFloat()
         this.targetIndex = target
     }
@@ -194,7 +194,7 @@ class PickerState<out T> internal constructor(
         if (info !is PickerLayoutInfo.Measured) {
             scrollToIndex(index)
         } else {
-            val target = index.coerceIn(0, values.size - 1)
+            val target = index.coerceInValueIndices()
             this.targetIndex = target
             val scrollAmount = -(target - this.index) * info.intervalHeight
             var previous = 0f
@@ -224,7 +224,7 @@ class PickerState<out T> internal constructor(
         layoutInfo = PickerLayoutInfo.Measured(labelHeight, dividerHeight)
         val lower = floor(index - 1).roundToInt()
         val upper = ceil(index + 1).roundToInt()
-        return max(lower, 0)..min(upper, values.size - 1)
+        return lower.coerceInValueIndices()..upper.coerceInValueIndices()
     }
 
     /**
@@ -236,12 +236,16 @@ class PickerState<out T> internal constructor(
     }
 
     companion object {
-        fun <T> Saver(values: List<T>) = Saver<PickerState<T>, Int>(
+        fun <T> Saver(
+            values: List<T>,
+            isInfiniteScrollable: Boolean,
+        ) = Saver<PickerState<T>, Int>(
             save = { it.settledIndex },
             restore = {
                 PickerState(
                     values = values,
                     initialIndex = it,
+                    isInfiniteScrollable = isInfiniteScrollable,
                 )
             }
         )

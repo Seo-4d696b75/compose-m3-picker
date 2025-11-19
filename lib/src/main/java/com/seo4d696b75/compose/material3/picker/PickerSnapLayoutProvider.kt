@@ -15,7 +15,8 @@ internal class PickerSnapLayoutProvider(
     private val state: PickerState<Any>,
     private val velocityThreshold: Float,
     private val snapDistance: PagerSnapDistance,
-) : SnapLayoutInfoProvider {
+) : SnapLayoutInfoProvider,
+    PickerValueSizeAwareScope by state {
     override fun calculateSnapOffset(velocity: Float): Float {
         val currentIndex = state.index
         val targetIndex = if (velocity.absoluteValue < velocityThreshold) {
@@ -28,7 +29,7 @@ internal class PickerSnapLayoutProvider(
             } else {
                 ceil(currentIndex).roundToInt()
             }
-        }.coerceIn(0, state.values.size - 1)
+        }.coerceInValueIndices()
 
         return when (val info = state.layoutInfo) {
             PickerLayoutInfo.Zero -> 0f
@@ -50,7 +51,7 @@ internal class PickerSnapLayoutProvider(
         }
 
         val indexOffset = (decayOffset / info.intervalHeight).toInt()
-        val suggestedTargetIndex = (startIndex - indexOffset).coerceIn(0, state.values.size - 1)
+        val suggestedTargetIndex = (startIndex - indexOffset).coerceInValueIndices()
 
         // Apply the snap distance suggestion.
         val targetIndex = snapDistance.calculateTargetPage(
@@ -59,7 +60,7 @@ internal class PickerSnapLayoutProvider(
             pageSize = info.labelHeight,
             pageSpacing = info.dividerHeight,
             velocity = velocity,
-        ).coerceIn(0, state.values.size - 1)
+        ).coerceInValueIndices()
 
         val distance = (targetIndex - startIndex).absoluteValue
 
