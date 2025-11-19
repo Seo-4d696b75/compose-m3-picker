@@ -102,7 +102,7 @@ fun <T> rememberPickerState(
 class PickerState<out T> internal constructor(
     val values: List<T>,
     initialIndex: Int,
-    isInfiniteScrollable: Boolean,
+    val isInfiniteScrollable: Boolean,
 ) : PickerValueSizeAwareScope by pickerValueSizeAwareScope(values, isInfiniteScrollable) {
     /**
      * Normalized offset of each displayed label.
@@ -186,17 +186,43 @@ class PickerState<out T> internal constructor(
         }
     }
 
+    private fun findClosestIndex(index: Int): Int = if (isInfiniteScrollable) {
+        val current = this.currentIndex
+        val normalizedDiff = index.normalizeValueIndex() - current
+        val diff = if (normalizedDiff > valueSize / 2) {
+            normalizedDiff - valueSize
+        } else {
+            normalizedDiff
+        }
+        current + diff
+    } else {
+        index.normalizeValueIndex()
+    }
+
     /**
      * Scroll to the specified index without animation.
+     *
+     * When infinite scrolling is enabled,
+     * [index] will be adjusted to the value closed to [rawIndex] ignoring `values.size` cycles.
+     * Otherwise [index] will be normalized in range of `0 ..< values.size`
+     *
+     * @param index only the value of `index % values.size` is considered
      */
     fun scrollToIndex(index: Int) {
-        val target = index.coerceInValueIndices()
+        val target = findClosestIndex(index)
         this.rawIndex = target.toFloat()
         this.targetIndex = target.normalizeValueIndex()
     }
 
     /**
      * Scroll to a given [index] with animation.
+     *
+     * When infinite scrolling is enabled,
+     * [index] will be adjusted to the value closed to [rawIndex] ignoring `values.size` cycles,
+     * and scroll amount will be minimized.
+     * Otherwise [index] will be normalized in range of `0 ..< values.size`
+     *
+     * @param index only the value of `index % values.size` is considered
      */
     suspend fun animateScrollToIndex(
         index: Int,
@@ -206,7 +232,7 @@ class PickerState<out T> internal constructor(
         if (info !is PickerLayoutInfo.Measured) {
             scrollToIndex(index)
         } else {
-            val target = index.coerceInValueIndices()
+            val target = findClosestIndex(index)
             this.targetIndex = target.normalizeValueIndex()
             val scrollAmount = -(target - this.rawIndex) * info.intervalHeight
             var previous = 0f
