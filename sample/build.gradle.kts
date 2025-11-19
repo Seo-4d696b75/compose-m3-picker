@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.seo4d696b75.compose.material3.picker.sample"
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
