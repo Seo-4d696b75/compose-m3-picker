@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.seo4d696b75.compose.material3.picker.sample"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.seo4d696b75.compose.material3.picker.sample"
@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.kotlinx.collections.immutable)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
