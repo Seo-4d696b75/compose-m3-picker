@@ -114,7 +114,7 @@ class PickerState<out T> internal constructor(
      * - `offset == 1-n` when the n-th (0 <= n < values.size) item is currently selected
      */
     val offset: Float
-        get() = 1f - index
+        get() = 1f - rawIndex
 
     /**
      * An index of currently selected value.
@@ -123,20 +123,20 @@ class PickerState<out T> internal constructor(
      * - non-integer while scrolling or snap (fling) animation running
      * - out of `0 ..< values.size` if infinite scroll is enabled
      */
-    var index by mutableFloatStateOf(initialIndex.normalizeValueIndex().toFloat())
+    var rawIndex by mutableFloatStateOf(initialIndex.normalizeValueIndex().toFloat())
         private set
 
     /**
      * An index of value to which the current picker will be snapped.
      *
-     * This index must be the same value of [index]
+     * This index must be the same value of [rawIndex]
      * when no scroll or snap (fling) animation is running.
      * The snap position only takes account of the scroll offset,
      * not the current scroll (fling) velocity.
      *
      * Normalized in range of `0 ..< values.size` even if infinite scroll is enabled.
      */
-    val currentIndex: Int by derivedStateOf { index.roundToInt().normalizeValueIndex() }
+    val currentIndex: Int by derivedStateOf { rawIndex.roundToInt().normalizeValueIndex() }
 
     /**
      * An index of value to which the picker should be snapped.
@@ -158,7 +158,7 @@ class PickerState<out T> internal constructor(
      * this index is NOT changed while user scrolling or snap (fling) animation running.
      */
     val settledIndex: Int by derivedStateOf {
-        val current = this.index
+        val current = this.rawIndex
         val target = this.targetIndex
         if ((target - current).absoluteValue < 1e-6) {
             previousSettledIndex = target
@@ -178,10 +178,10 @@ class PickerState<out T> internal constructor(
         return if (info !is PickerLayoutInfo.Measured) {
             0f
         } else {
-            val currentIndex = index
+            val currentIndex = rawIndex
             val targetIndex =
                 (currentIndex - delta / info.intervalHeight).coerceInValueIndices()
-            index = targetIndex
+            rawIndex = targetIndex
             -(targetIndex - currentIndex) * info.intervalHeight
         }
     }
@@ -191,7 +191,7 @@ class PickerState<out T> internal constructor(
      */
     fun scrollToIndex(index: Int) {
         val target = index.coerceInValueIndices()
-        this.index = target.toFloat()
+        this.rawIndex = target.toFloat()
         this.targetIndex = target.normalizeValueIndex()
     }
 
@@ -208,7 +208,7 @@ class PickerState<out T> internal constructor(
         } else {
             val target = index.coerceInValueIndices()
             this.targetIndex = target.normalizeValueIndex()
-            val scrollAmount = -(target - this.index) * info.intervalHeight
+            val scrollAmount = -(target - this.rawIndex) * info.intervalHeight
             var previous = 0f
             animate(
                 initialValue = 0f,
@@ -219,7 +219,7 @@ class PickerState<out T> internal constructor(
                 val consumed = dispatchRawDelta(delta)
                 previous += consumed
             }
-            this.index = target.toFloat()
+            this.rawIndex = target.toFloat()
         }
     }
 
@@ -236,8 +236,8 @@ class PickerState<out T> internal constructor(
         dividerHeight: Int,
     ): Iterable<Int> {
         layoutInfo = PickerLayoutInfo.Measured(labelHeight, dividerHeight)
-        val lower = floor(index - 1).roundToInt()
-        val upper = ceil(index + 1).roundToInt()
+        val lower = floor(rawIndex - 1).roundToInt()
+        val upper = ceil(rawIndex + 1).roundToInt()
         return lower.coerceInValueIndices()..upper.coerceInValueIndices()
     }
 
@@ -246,7 +246,7 @@ class PickerState<out T> internal constructor(
      */
     fun offset(index: Int): Int = when (val info = layoutInfo) {
         PickerLayoutInfo.Zero -> throw IllegalStateException("picker not layout yet")
-        is PickerLayoutInfo.Measured -> ((index + 1 - this.index) * info.intervalHeight).roundToInt()
+        is PickerLayoutInfo.Measured -> ((index + 1 - this.rawIndex) * info.intervalHeight).roundToInt()
     }
 
     companion object {

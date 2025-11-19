@@ -18,7 +18,7 @@ internal class PickerSnapLayoutProvider(
 ) : SnapLayoutInfoProvider,
     PickerValueSizeAwareScope by state {
     override fun calculateSnapOffset(velocity: Float): Float {
-        val currentIndex = state.index
+        val currentIndex = state.rawIndex
         val targetIndex = if (velocity.absoluteValue < velocityThreshold) {
             // ignore sign of velocity and snap to the closest
             currentIndex.roundToInt()
@@ -43,7 +43,7 @@ internal class PickerSnapLayoutProvider(
 
     override fun calculateApproachOffset(velocity: Float, decayOffset: Float): Float {
         val info = state.layoutInfo as? PickerLayoutInfo.Measured ?: return 0f
-        val currentIndex = state.index
+        val currentIndex = state.rawIndex
         val startIndex = if (velocity > 0) {
             ceil(currentIndex).roundToInt()
         } else {
