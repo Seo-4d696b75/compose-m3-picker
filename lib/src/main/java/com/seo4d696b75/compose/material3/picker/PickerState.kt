@@ -175,14 +175,19 @@ class PickerState<out T> internal constructor(
      */
     fun dispatchRawDelta(delta: Float): Float {
         val info = layoutInfo
-        return if (info !is PickerLayoutInfo.Measured) {
-            0f
-        } else {
-            val currentIndex = rawIndex
-            val targetIndex =
-                (currentIndex - delta / info.intervalHeight).coerceInValueIndices()
-            rawIndex = targetIndex
-            -(targetIndex - currentIndex) * info.intervalHeight
+        return when {
+            info !is PickerLayoutInfo.Measured -> 0f
+
+            // not scrollable, but drag events are consumed
+            valueSize == 1 -> 0f
+
+            else -> {
+                val currentIndex = rawIndex
+                val targetIndex =
+                    (currentIndex - delta / info.intervalHeight).coerceInValueIndices()
+                rawIndex = targetIndex
+                -(targetIndex - currentIndex) * info.intervalHeight
+            }
         }
     }
 
