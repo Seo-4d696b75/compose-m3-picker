@@ -32,12 +32,12 @@ import kotlin.math.roundToInt
  *   If [index] is changed outside of the picker (not by user interaction),
  *   the picker will be scrolled to the target position without animation.
  * @param values All the selectable values.
+ * @param isInfiniteScrollable Whether infinite scroll (including fling animation) is enabled.
  * @param onIndexChange A callback invoked when the currently selected value in picker is changed.
  *   [onIndexChange] is NOT invoked while usr scrolling, but will be called
  *   after user interaction completed and the picker is settled to the final snapping position.
  *   The index param of [onIndexChange] is normalized in range of `0 ..< values.size`
  *   even when [isInfiniteScrollable] is `true`.
- * @param isInfiniteScrollable Whether infinite scroll (including fling animation) is enabled.
  *
  * @see [PickerState.settledIndex]
  */
@@ -45,8 +45,8 @@ import kotlin.math.roundToInt
 fun <T> rememberPickerState(
     index: Int,
     values: ImmutableList<T>,
-    onIndexChange: (Int) -> Unit,
     isInfiniteScrollable: Boolean = false,
+    onIndexChange: (Int) -> Unit = {},
 ): PickerState<T> {
     val state = rememberPickerState(values, index, isInfiniteScrollable)
 

@@ -15,9 +15,6 @@ import kotlinx.collections.immutable.ImmutableList
  *
  * @param value currently selected value. Must be include in [range].
  * @param range all the values which can be selected
- * @param onValueChange A callback invoked when the currently selected value is changed.
- *   This callback is NOT invoked while usr scrolling, but will be called
- *   after user interaction completed and the picker is settled to the final snapping position.
  * @param modifier
  * @param enabled Whether a user can scroll this picker.
  *   Even if `false` set, the current selected value can be changed via [value] programmatically.
@@ -28,12 +25,14 @@ import kotlinx.collections.immutable.ImmutableList
  * @param dividerHeight Height of a divider displayed between labels.
  *   The width of divider is same as the label.
  * @param isInfiniteScrollable Whether infinite scroll (including fling animation) is enabled.
+ * @param onValueChange A callback invoked when the currently selected value is changed.
+ *   This callback is NOT invoked while usr scrolling, but will be called
+ *   after user interaction completed and the picker is settled to the final snapping position.
  */
 @Composable
 fun NumberPicker(
     value: Int,
     range: ImmutableList<Int>,
-    onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: PickerColors = PickerDefaults.colors(),
@@ -41,11 +40,11 @@ fun NumberPicker(
     labelSize: DpSize = PickerDefaults.labelSize,
     dividerHeight: Dp = PickerDefaults.dividerHeight,
     isInfiniteScrollable: Boolean = false,
+    onValueChange: (Int) -> Unit = {},
 ) {
     Picker(
         index = range.indexOf(value),
         values = range,
-        onIndexChange = { onValueChange(range[it]) },
         modifier = modifier,
         enabled = enabled,
         colors = colors,
@@ -53,6 +52,7 @@ fun NumberPicker(
         labelSize = labelSize,
         dividerHeight = dividerHeight,
         isInfiniteScrollable = isInfiniteScrollable,
+        onIndexChange = { onValueChange(range[it]) },
     )
 }
 
@@ -63,11 +63,6 @@ fun NumberPicker(
  *   If [index] is changed outside of the picker (not by user interaction),
  *   the picker will be scrolled to the target position without animation.
  * @param values All the selectable values.
- * @param onIndexChange A callback invoked when the currently selected value in picker is changed.
- *   [onIndexChange] is NOT invoked while usr scrolling, but will be called
- *   after user interaction completed and the picker is settled to the final snapping position.
- *   The index param of [onIndexChange] is normalized in range of `0 ..< values.size`
- *   even when [isInfiniteScrollable] is `true`.
  * @param modifier
  * @param enabled Whether a user can scroll this picker.
  *   Even if `false` set, the current selected value can be changed via [index] programmatically.
@@ -78,12 +73,16 @@ fun NumberPicker(
  * @param dividerHeight Height of a divider displayed between labels.
  *   The width of divider is same as the label.
  * @param isInfiniteScrollable Whether infinite scroll (including fling animation) is enabled.
+ * @param onIndexChange A callback invoked when the currently selected value in picker is changed.
+ *   [onIndexChange] is NOT invoked while usr scrolling, but will be called
+ *   after user interaction completed and the picker is settled to the final snapping position.
+ *   The index param of [onIndexChange] is normalized in range of `0 ..< values.size`
+ *   even when [isInfiniteScrollable] is `true`.
  */
 @Composable
 fun <T : Any> Picker(
     index: Int,
     values: ImmutableList<T>,
-    onIndexChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: PickerColors = PickerDefaults.colors(),
@@ -91,9 +90,10 @@ fun <T : Any> Picker(
     labelSize: DpSize = PickerDefaults.labelSize,
     dividerHeight: Dp = PickerDefaults.dividerHeight,
     isInfiniteScrollable: Boolean = false,
+    onIndexChange: (Int) -> Unit = {},
 ) {
     Picker(
-        state = rememberPickerState(index, values, onIndexChange, isInfiniteScrollable),
+        state = rememberPickerState(index, values, isInfiniteScrollable, onIndexChange),
         modifier = modifier,
         enabled = enabled,
         colors = colors,
