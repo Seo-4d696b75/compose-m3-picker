@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.layout.LazyLayoutItemProvider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,15 +23,14 @@ internal fun <T> rememberPickerLabelProvider(
     enabled: Boolean,
     contentColor: Color,
 ): () -> PickerLabelProvider<T> {
-    val provider = remember {
-        PickerLabelProvider<T>()
+    val provider = remember(state) {
+        PickerLabelProvider(state)
     }.also {
-        it.values = state.values
         it.label = label
         it.enabled = enabled
         it.contentColor = contentColor
     }
-    return remember {
+    return remember(provider) {
         { provider }
     }
 }
@@ -41,17 +39,36 @@ internal fun <T> rememberPickerLabelProvider(
  * Defines how to render labels of picker
  */
 @ExperimentalFoundationApi
-internal class PickerLabelProvider<T> : LazyLayoutItemProvider {
-    var values: List<T> by mutableStateOf(emptyList())
+internal class PickerLabelProvider<T>(
+    private val state: PickerState<T>,
+) : LazyLayoutItemProvider,
+    PickerValueSizeAwareScope by state {
+
     var label: (@Composable (T, Boolean) -> Unit) by mutableStateOf({ _, _ -> })
     var enabled: Boolean by mutableStateOf(false)
     var contentColor: Color by mutableStateOf(Color.Unspecified)
 
-    override val itemCount by derivedStateOf { values.size }
+    override val itemCount: Int
+        get() = when {
+            valueSize == 1 -> 1
+
+            state.isInfiniteScrollable && valueSize < 4 -> {
+                // if values.size < 4 and infinite scrolling enabled,
+                // multiple labels with a same index my be visible at the same time.
+                // Note: While scrolling, up to 4 values are displayed simultaneously.
+                // But LazyLayout does NOT allow to compose or measure a same index for multiple times,
+                // so extra buffers are needed.
+                valueSize * 2
+            }
+
+            else -> valueSize
+        }
 
     @Composable
     override fun Item(index: Int, key: Any) {
-        val value = values[index]
+        // if values.size < 4 and infinite scrolling enabled,
+        // index my be out of range. Must be normalized.
+        val value = state.values[index.normalizeValueIndex()]
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,

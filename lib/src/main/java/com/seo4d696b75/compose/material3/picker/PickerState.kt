@@ -255,17 +255,68 @@ class PickerState<out T> internal constructor(
     /**
      * Update layout size of the picker and get label indices to be displayed.
      *
-     * @return not normalized indices
+     * @return indices of labels to be composed and measured
      */
     internal fun onLayout(
         labelHeight: Int,
         dividerHeight: Int,
-    ): Iterable<Int> {
+    ): Iterable<LabelIndex> {
         layoutInfo = PickerLayoutInfo.Measured(labelHeight, dividerHeight)
         val lower = floor(rawIndex - 1).roundToInt()
         val upper = ceil(rawIndex + 1).roundToInt()
-        return lower.coerceInValueIndices()..upper.coerceInValueIndices()
+        val rawIndices = lower.coerceInValueIndices()..upper.coerceInValueIndices()
+
+        return when {
+            valueSize == 1 -> listOf(
+                LabelIndex(
+                    compositionIndex = 0,
+                    rawIndex = 0, // fixed, not scrollable
+                ),
+            )
+
+            isInfiniteScrollable && valueSize < 4 -> {
+                // At most 2 labels with a same index may be displayed simultaneously
+                // when the values of rawIndex.normalizeValueIndex() is duplicated,
+                // add values.size
+                val compositionIndexSet = mutableSetOf<Int>()
+                rawIndices.map { rawIndex ->
+                    var compositionIndex = rawIndex.normalizeValueIndex()
+                    if (!compositionIndexSet.add(compositionIndex)) {
+                        compositionIndex += valueSize
+                        require(compositionIndexSet.add(compositionIndex)) {
+                            "failed to determine composition index for raw index: $rawIndex"
+                        }
+                    }
+                    LabelIndex(compositionIndex, rawIndex)
+                }
+            }
+
+            else -> rawIndices.map { rawIndex ->
+                // only one label with a same index is displayed simultaneously
+                // all the values of rawIndex.normalizeValueIndex() are NOT duplicated
+                LabelIndex(
+                    compositionIndex = rawIndex.normalizeValueIndex(),
+                    rawIndex = rawIndex,
+                )
+            }
+        }
     }
+
+    internal data class LabelIndex(
+        /**
+         * unique index of composition in range of `[0, values.size * 2)`
+         *
+         * see `LazyLayoutMeasureScope.compose()` and `PickerLabelProvider.Item()`
+         */
+        val compositionIndex: Int,
+
+        /**
+         * unique index of position
+         *
+         * used for calculating its pixel offset in [PickerState.offset]
+         */
+        val rawIndex: Int,
+    )
 
     /**
      * Calculate offset in pixels at which the specified label should be placed.
