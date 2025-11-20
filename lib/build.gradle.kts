@@ -135,6 +135,18 @@ afterEvaluate {
         }
     }
     signing {
+        // sign settings from env variables
+        val keyId = System.getenv("SIGNING_KEY_ID")
+        val password = System.getenv("SIGNING_PASSWORD")
+        val secretKey = System.getenv("SIGNING_SECRET_KEY")
+        
+        if (keyId == null || password == null || secretKey == null) {
+            throw GradleException(
+                "Signing configuration is missing. Please run publish.sh script with KEY_ID and PASSPHRASE."
+            )
+        }
+        
+        useInMemoryPgpKeys(keyId, secretKey, password)
         sign(publishing.publications["maven"])
     }
 }
