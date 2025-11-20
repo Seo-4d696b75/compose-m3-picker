@@ -13,20 +13,25 @@ internal interface PickerValueSizeAwareScope {
 internal fun pickerValueSizeAwareScope(
     values: List<*>,
     isInfiniteScrollable: Boolean,
-) = object : PickerValueSizeAwareScope {
-    override val valueSize = values.size
-
-    override fun Int.normalizeValueIndex() = this.mod(valueSize)
-
-    override fun Int.coerceInValueIndices() = if (isInfiniteScrollable) {
-        this
-    } else {
-        this.coerceIn(0, valueSize - 1)
+): PickerValueSizeAwareScope {
+    require(values.isNotEmpty()) {
+        "empty values not allowed for picker"
     }
+    return object : PickerValueSizeAwareScope {
+        override val valueSize = values.size
 
-    override fun Float.coerceInValueIndices() = if (isInfiniteScrollable) {
-        this
-    } else {
-        this.coerceIn(0f, valueSize - 1f)
+        override fun Int.normalizeValueIndex() = this.mod(valueSize)
+
+        override fun Int.coerceInValueIndices() = if (isInfiniteScrollable) {
+            this
+        } else {
+            this.coerceIn(0, valueSize - 1)
+        }
+
+        override fun Float.coerceInValueIndices() = if (isInfiniteScrollable) {
+            this
+        } else {
+            this.coerceIn(0f, valueSize - 1f)
+        }
     }
 }
