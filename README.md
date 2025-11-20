@@ -10,12 +10,13 @@ Android library providing a Picker implemented by Jetpack Compose.
 
 ## Features
 
-<img src="capture/sample_picker.gif">
+<img src="capture/sample_picker_variant.gif" alt="basic picker demo" width="240"> <img src="capture/sample_picker_infinite.gif" alt="infinite scroll demo" width="240">
 
 - ✅️ Same experience as [NumberPicker view](https://developer.android.com/reference/android/widget/NumberPicker)
 - ✅️ Supports scroll and fling
 - ✅️ Compatible with Material3
 - ✅️ Custamizable with slot pattern
+- ✅️ Infinite scrollable
 
 ## Installation
 
@@ -88,7 +89,10 @@ dependencies {
             Icons.Outlined.Delete,
         )
     }
-    val state = rememberPickerState(values)
+    val state = rememberPickerState(
+        values = values,
+        isInfiniteScrollable = true,
+    )
 
     Picker(
         state = state,
