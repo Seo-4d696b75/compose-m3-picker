@@ -50,6 +50,9 @@ android {
 dependencies {
     implementation(project(":lib"))
 
+    // use from remote repository
+    // implementation(libs.material3.picker)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
