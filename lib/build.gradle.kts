@@ -53,7 +53,6 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
     api(libs.androidx.material3)
     api(libs.kotlinx.collections.immutable)
 }
