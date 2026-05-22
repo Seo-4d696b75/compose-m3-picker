@@ -2,20 +2,18 @@
 publish = "0.2.0"
 agp = "8.10.1"
 kotlin = "2.2.21"
-coreKtx = "1.17.0"
+coreKtx = "1.18.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
-lifecycleRuntimeKtx = "2.9.4"
-activityCompose = "1.11.0"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.13.0"
 composeBom = "2026.05.01"
 # material3 はライブラリで api 公開するため BOM ではなく明示的にバージョン指定
 # BOM を api(platform(...)) で公開すると使う側でバージョン競合が発生するため
 material3 = "1.4.0"
 # material3 からの推移的解決だと意図せず古いバージョンを参照する場合があるため BOM と同じバージョンを明示的に指定する
 composeFoundation = "1.11.2"
-appcompat = "1.7.1"
-material = "1.13.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,8 +32,6 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "composeFoundation" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version = "0.4.0" }
 
 material3-picker = { group = "com.seo4d696b75.compose", name = "material3-picker", version.ref = "publish" }
