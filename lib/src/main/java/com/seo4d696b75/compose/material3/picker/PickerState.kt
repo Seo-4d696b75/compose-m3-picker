@@ -201,7 +201,7 @@ class PickerState<out T> internal constructor(
         }
         current + diff
     } else {
-        index.normalizeValueIndex()
+        index.coerceInValueIndices()
     }
 
     /**
@@ -209,9 +209,9 @@ class PickerState<out T> internal constructor(
      *
      * When infinite scrolling is enabled,
      * [index] will be adjusted to the value closed to [rawIndex] ignoring `values.size` cycles.
-     * Otherwise [index] will be normalized in range of `0 ..< values.size`
+     * Otherwise [index] will be bounded in range of `0 ..< values.size`
      *
-     * @param index only the value of `index % values.size` is considered
+     * @param index the target position.
      */
     fun scrollToIndex(index: Int) {
         val target = findClosestIndex(index)
@@ -225,9 +225,9 @@ class PickerState<out T> internal constructor(
      * When infinite scrolling is enabled,
      * [index] will be adjusted to the value closed to [rawIndex] ignoring `values.size` cycles,
      * and scroll amount will be minimized.
-     * Otherwise [index] will be normalized in range of `0 ..< values.size`
+     * Otherwise [index] will be bounded in range of `0 ..< values.size`
      *
-     * @param index only the value of `index % values.size` is considered
+     * @param index the target position.
      */
     suspend fun animateScrollToIndex(
         index: Int,
