@@ -12,7 +12,7 @@ plugins {
 
 android {
     namespace = "com.seo4d696b75.compose.material3.picker"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 26

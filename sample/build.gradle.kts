@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.seo4d696b75.compose.material3.picker.sample"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.seo4d696b75.compose.material3.picker.sample"
