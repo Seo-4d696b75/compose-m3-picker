@@ -1,5 +1,5 @@
 [versions]
-publish = "0.2.1"
+publish = "0.2.2"
 agp = "9.2.1"
 kotlin = "2.3.21"
 coreKtx = "1.19.0"
