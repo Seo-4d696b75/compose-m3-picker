@@ -4,7 +4,6 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("maven-publish")
     id("signing")

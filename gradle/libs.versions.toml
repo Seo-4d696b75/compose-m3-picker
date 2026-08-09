@@ -1,6 +1,6 @@
 [versions]
 publish = "0.2.1"
-agp = "8.10.1"
+agp = "9.2.1"
 kotlin = "2.3.21"
 coreKtx = "1.18.0"
 junit = "4.13.2"
@@ -38,6 +38,5 @@ material3-picker = { group = "com.seo4d696b75.compose", name = "material3-picker
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
