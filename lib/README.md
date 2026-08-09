@@ -17,6 +17,10 @@
 - libs.versions.toml `versions.publish` を更新する
 - 署名付きのタグを打つ `git tag -s $name -m $message`
 
+### UserToken確認
+
+有効期限切れの場合は[再発行が必要です](#usertoken取得)
+
 ### 公開スクリプトの実行
 
 ```shell
@@ -66,6 +70,12 @@ SONATYPE_PASSWORD=$password
 gpg --list-secret-keys --keyid-format=short
 ```
 
-出力例の `sec rsa4096/ABCD1234` の `/` 以降の8文字（Short形式）を使用
+出力例の `ssb ed25519/` の `/` 以降の8文字（Short形式）を使用
+
+```shell
+sec#  ed25519/${主鍵のkeyid} ${主鍵の有効期限} [C]
+uid         [ unknown] ${user.name} <${user.email}>
+ssb   ed25519/${副鍵のkeyid} ${副鍵の有効期限} [S]
+```
 
 **注意：** 秘密鍵は実行時にメモリ内で動的にエクスポートされるため、ファイルへの保存は不要です
